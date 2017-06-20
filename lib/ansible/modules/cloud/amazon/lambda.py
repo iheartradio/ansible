@@ -303,9 +303,9 @@ def main():
     else:
         # get account ID and assemble ARN
         try:
-            iam_client = boto3_conn(module, conn_type='client', resource='iam',
+            sts_client = boto3_conn(module, conn_type='client', resource='sts',
                                 region=region, endpoint=ec2_url, **aws_connect_kwargs)
-            account_id = iam_client.get_user()['User']['Arn'].split(':')[4]
+            account_id = sts_client.get_caller_identity().get('Account')
             role_arn = 'arn:aws:iam::{0}:role/{1}'.format(account_id, role)
         except (botocore.exceptions.ClientError, botocore.exceptions.ValidationError) as e:
             module.fail_json(msg=str(e))
